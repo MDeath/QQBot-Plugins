@@ -3,7 +3,7 @@
 
 QQBot原站 Github：https://github.com/pandolia/qqbot
 
-包含插件:
+（注：如果看到插件少了，也许回炉重造了）
 
 Admin - 管理员
 
