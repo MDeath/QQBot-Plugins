@@ -1,0 +1,44 @@
+# -*- coding: utf-8 -*-
+
+import Admin
+
+def onPlug(bot):
+    group = bot.List('group')
+    for g in group:
+        bot.SendTo(g, '已加载 plugMod')
+
+def onUnplug(bot):
+    group = bot.List('group')
+    for g in group:
+        bot.SendTo(g, '已卸载 plugMod')
+
+def onQQMessage(bot, contact, member, content):
+    if '加载插件：' in content and (Admin.admin_ID(bot,contact,member) or Admin.user_ID(bot,member)):
+        info = content.split('加载插件：')[1]
+        try:
+            plugs = info.split('，')
+            for plug in plugs:
+                bot.Plug(plug)
+            bot.Plug('INFO')
+        except:
+            bot.Plug(info)
+            bot.Plug('INFO')
+    if '卸载插件：' in content and (Admin.admin_ID(bot,contact,member) or Admin.user_ID(bot,member)):
+        if 'plug' in content or 'Admin' in content or 'INFO' in content:
+            bot.SendTo(contact, '禁止停用:Admin,INFO,plug')
+        else:
+            info = content.split('卸载插件：')[1]
+            try:
+                plugs = info.split('，')
+                for plug in plugs:
+                    bot.Unplug(plug)
+            except:
+                bot.Unplug(info)
+    if '插件列表' in content and (Admin.admin_ID(bot,contact,member) or Admin.user_ID(bot,member)):
+        lst = os.listdir('.qqbot-tmp\plugins')
+        info = ''
+        for f in lst:
+            if '.py' in f:
+                f = f.replace('.py','\n')
+                info += f
+        bot.SendTo(contact, info)
