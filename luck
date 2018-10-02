@@ -8,7 +8,7 @@ import random
 def onPlug(bot):
     group = bot.List('group')
     for g in group:
-        bot.SendTo(g, '已加载 luck')
+        pass
 
 def onUnplug(bot):
     group = bot.List('group')
@@ -29,7 +29,9 @@ def log_read(contact, member, mod):
         log['name'] = member.nick
         log['last'] = 10
         log['today'] = {}
-        log['log'] = ['','','','','','','','','','']
+        log['log'] = []
+        for number in range(0,10):
+            log['log'].append({'time': '', 'prop': ''})
         last = 10
         log_today = ''
         number = 50
@@ -42,7 +44,7 @@ def log_write(contact, member, mod, log, last, number, info):
         pass
     today = time.strftime('%Y-%m-%d', time.localtime())
     log_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    log_w = open('.qqbot-tmp/' + contact.name+ '/' + mod + ' log/' + member.nick + '.txt', 'w')
+    log_w = open('.qqbot-tmp/'+contact.name+'/'+mod+' log/'+member.nick+'.txt', 'w')
     log['name'] = member.nick
     log['last'] = last
     log['today']['Y:M:D'] = today
@@ -310,7 +312,7 @@ def Marking(contact,member,mod):
                 '铱合金火星塞'
             ]
             randint = random.randint(0, len(Goods_list) - 1)
-            info = '通用进化材料 ' + Goods_list[randint]
+            info = Goods_list[randint]
         elif 7789 < randint < 9263: # 装备经验材料 14.74%
             Goods_list = [
                 '双子以太碎片',
@@ -321,7 +323,7 @@ def Marking(contact,member,mod):
                 '双子灵魂结晶'
             ]
             randint = random.randint(0, len(Goods_list) - 1)
-            info = '装备经验材料 ' + Goods_list[randint]
+            info = Goods_list[randint]
         elif 9263 < randint < 10000: # 吼姆宝藏 7.37%
             Goods_list = [
                 '吼咪宝藏',
@@ -329,10 +331,10 @@ def Marking(contact,member,mod):
                 '吼里宝藏'
             ]
             randint = random.randint(0, len(Goods_list) - 1)
-            info = '吼姆宝藏 ' + Goods_list[randint]
-        log_write(contact, member, mod, log, last, member, info)
+            info = Goods_list[randint]
+        log_write(contact, member, mod, log, last, number, info)
         number = True
-    else:
+    elif number == 0:
         info = 'None'
         number = False
     return info,number
@@ -352,7 +354,7 @@ def Weapon(contact,member,mod):
             randint =random.randint(1, 14260)
         if randint <= 5704: # 4星武器 5.704%
             last = 10
-            weapon_list = [
+            Goods_list = [
                 '克列欧博克拉 上',
                 '克列欧博克拉 中',
                 '克列欧博克拉 下',
@@ -414,11 +416,11 @@ def Weapon(contact,member,mod):
                 '卡莲.颂歌 下',
                 '芽衣.泳装派对 中'
             ]
-            randint = random.randint(0, len(weapon_list)-1)
-            info = '4星 '+weapon_list[randint]
+            randint = random.randint(0, len(Goods_list)-1)
+            info = '4星 '+Goods_list[randint]
         elif 5704 < randint <= 14260:  # 4星圣痕 8.556%
             last = 10
-            weapon_list = [
+            Goods_list = [
                 '双枪 2nd圣遗物',
                 '双枪 索尔之锤',
                 '双枪 超电磁手炮',
@@ -452,10 +454,10 @@ def Weapon(contact,member,mod):
                 '十字架 樱花的誓约',
                 '十字架 11th圣遗物'
             ]
-            randint = random.randint(0, len(weapon_list)-1)
-            info = '4星 '+weapon_list[randint]
+            randint = random.randint(0, len(Goods_list)-1)
+            info = '4星 '+Goods_list[randint]
         elif 14260 < randint <= 25252:  # 3星武器 10.992%
-            weapon_list = [
+            Goods_list = [
                 '双枪 水妖精I型',
                 '双枪 水妖精II型',
                 '双枪 火妖精I型',
@@ -478,8 +480,8 @@ def Weapon(contact,member,mod):
                 '拳套 CAS-X圣徒',
                 '拳套 白星驱逐者'
             ]
-            randint = random.randint(0, len(weapon_list)-1)
-            info = '3星 '+weapon_list[randint]
+            randint = random.randint(0, len(Goods_list)-1)
+            info = '3星 '+Goods_list[randint]
         elif 25252 < randint <= 58229:  # 3星圣痕 32.977%
             Goods_list = [
                 '呼邪 上',
@@ -510,10 +512,10 @@ def Weapon(contact,member,mod):
                 '时雨绮罗 中',
                 '时雨绮罗 下'
             ]
-            randint = random.randint(0, len(weapon_list)-1)
-            info = '3星 '+weapon_list[randint]
+            randint = random.randint(0, len(Goods_list)-1)
+            info = '3星 '+Goods_list[randint]
         elif 58249 < randint <= 74937: # 通用进化材料 16.708%
-            weapon_list = [
+            Goods_list = [
                 '特斯拉涡轮机',
                 '相转移镜面',
                 '超合金盾',
@@ -521,10 +523,10 @@ def Weapon(contact,member,mod):
                 '断裂的刀柄',
                 '铱合金火星塞'
             ]
-            randint = random.randint(0, len(weapon_list) - 1)
-            info = '通用进化材料 ' + weapon_list[randint]
+            randint = random.randint(0, len(Goods_list) - 1)
+            info = Goods_list[randint]
         elif 7789 < randint <= 91645: # 装备经验 16.708%
-            weapon_list = [
+            Goods_list = [
                 '双子以太碎片',
                 '以太结晶',
                 '双子以太结晶',
@@ -532,19 +534,19 @@ def Weapon(contact,member,mod):
                 '灵魂结晶',
                 '双子灵魂结晶'
             ]
-            randint = random.randint(0, len(weapon_list) - 1)
-            info = '装备经验材料 ' + weapon_list[randint]
+            randint = random.randint(0, len(Goods_list) - 1)
+            info = Goods_list[randint]
         elif 9263 < randint <= 100000: # 金币 8.354%
-            weapon_list = [
+            Goods_list = [
                 '吼咪宝藏',
                 '吼美宝藏',
                 '吼里宝藏'
             ]
-            randint = random.randint(0, len(weapon_list) - 1)
-            info = '吼姆宝藏 ' + weapon_list[randint]
-        log_write(contact, member, mod, log, last, member, info)
+            randint = random.randint(0, len(Goods_list) - 1)
+            info = '吼姆宝藏 ' + Goods_list[randint]
+        log_write(contact, member, mod, log, last, number, info)
         number = True
-    else:
+    elif number == 0:
         info = 'None'
         number = False
     return info,number
@@ -662,7 +664,7 @@ def Upweapon(contact,member,mod):
                 '铱合金火星塞'
             ]
             randint = random.randint(0, len(Goods_list) - 1)
-            info = '通用进化材料 ' + Goods_list[randint]
+            info = Goods_list[randint]
         elif 74392 < randint <= 91464: # 装备经验材料 17.072%
             Goods_list = [
                 '双子以太碎片',
@@ -673,7 +675,7 @@ def Upweapon(contact,member,mod):
                 '双子灵魂结晶'
             ]
             randint = random.randint(0, len(Goods_list) - 1)
-            info = '装备经验材料 ' + Goods_list[randint]
+            info = Goods_list[randint]
         elif 91464 < randint <= 100000: # 吼姆宝藏 8.536%
             Goods_list = [
                 '吼咪宝藏',
@@ -681,7 +683,7 @@ def Upweapon(contact,member,mod):
                 '吼里宝藏'
             ]
             randint = random.randint(0, len(Goods_list) - 1)
-            info = '吼姆宝藏 ' + Goods_list[randint]
+            info = Goods_list[randint]
         log_write(contact, member, mod, log, last, number, info)
         number = True
     elif member == 0:
@@ -690,6 +692,19 @@ def Upweapon(contact,member,mod):
     return info,number
 
 def onQQMessage(bot, contact, member, content):
+    if '抽奖菜单' == content:
+        info = '''抽奖菜单:
+        标配补给
+        10连 或 十连 + 标配补给
+        查看 + 标配补给 + 记录
+        装备补给
+        10连 或 十连 装备补给
+        查看 + 装备补给 + 记录
+        精准补给 A 或 B
+        10连 或 十连 精准补给 A 或 B
+        查看 + 精准补给 A 或 B
+        精准补给 A 或 B + 记录'''
+        bot.SendTo(contact, info)
     if not bot.isMe(contact, member) and '标配补给' in content and member != None:
         mod = 'Marking'
         if '10连' in content or '十连' in content:
@@ -723,7 +738,7 @@ def onQQMessage(bot, contact, member, content):
             num, number = 10, True
             message = '十连装备：'
             while num > 0 and number:
-                info,number = Weapon(contact, member)
+                info,number = Weapon(contact, member, mod)
                 num -= 1
                 message += '\n'+info
             else:
@@ -731,7 +746,7 @@ def onQQMessage(bot, contact, member, content):
                     message += '\n今天次数已用尽'
             bot.SendTo(contact,message)
         if '装备补给' == content:
-            info, number = Weapon(contact,member)
+            info, number = Weapon(contact,member,mod)
             if number:
                 bot.SendTo(contact, info)
             else:
