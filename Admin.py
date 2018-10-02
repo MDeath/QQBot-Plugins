@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import INFO
 import os
 
 def onPlug(bot):
@@ -50,14 +49,6 @@ def onQQMessage(bot, contact, member, content):
         if 'bot管理员' == content:
             admin = bot.List('buddy', 'Admin')[0]
             bot.SendTo(contact, '管理员：'+admin.nick+' ID:'+admin.uin)
-        if content == '查看id' or content == '查看ID':
-            file_r = open('.qqbot-tmp/' + contact.name + '/INFO.txt', 'r', encoding='utf-8')
-            text = file_r.read()
-            info = eval(text)
-            file_r.close
-            user = info['user']
-            name = info['name']
-            bot.SendTo(contact, name+'ID='+user)
         if '闭嘴bot' == content or 'bot闭嘴' == content:
             lst = os.listdir('.qqbot-tmp\plugins')
             for f in lst:
