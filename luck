@@ -8,7 +8,7 @@ import random
 def onPlug(bot):
     group = bot.List('group')
     for g in group:
-        pass
+        bot.SendTo(g, '已加载 luck')
 
 def onUnplug(bot):
     group = bot.List('group')
