@@ -9,7 +9,7 @@ Admin - 管理员
 
 plugMod - 插件管理
 
-INFO - 临时信息记录
+INFO - 信息记录
 
 repeat - 复读机
 
