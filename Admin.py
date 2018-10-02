@@ -26,25 +26,42 @@ def user_ID(bot,member):
             return True
 
 def onQQMessage(bot, contact, member, content):
+    if '菜单' == content:
+        info = '''用户指令:
+        bot指令:
+            bot闭嘴 , 闭嘴bot
+            bot说话 , 说话bot
+            bot用户 , bot用户 + number
+        插件指令:
+            插件列表
+            加载插件: + 插件名
+            卸载插件: + 插件名
+            (插件用","分隔)
+        成员指令:
+            查看自己
+            抽奖菜单(加载与否)'''
+        bot.SendTo(contact, info)
     if '查看自己' == content:
-        group = bot.List('group', '桃源郷')[0]
-        buddy = bot.List(group, member.nick)[0]
-        bot.SendTo(contact, 'UID:' + buddy.uin + '\n昵称：' + buddy.nick + '\n群名片：' + buddy.name)
-    if admin_ID(bot,contact,member):
-        if '重启bot' == content or 'bot重启' == content:
-            bot.Restart()
-        if '更新数据' in content:
-            if bot.Update('buddy'):
-                Updata = True
-                return
-            if bot.Update('group'):
-                Updata = True
-                return
-            if member != None and bot.Update('group',contact):
-                Updata = True
-            if Updata:
-                bot.SendTo(contact, '数据更新成功')
-
+        if member != None:
+            group = bot.List('group', contact.name)[0]
+            buddy = bot.List(group, member.nick)[0]
+            bot.SendTo(contact, str(contact) + '\nUID:' + buddy.uin + '\n昵称：' + buddy.nick + '\n群名片：' + buddy.name)
+        elif member == None:
+            buddy = bot.List('buddy', contact.name)[0]
+            bot.SendTo(contact, 'UID:' + buddy.uin + '\n昵称：' + buddy.nick + '\n群名片：' + buddy.name)
+    if ('重启bot' == content or 'bot重启' == content) and admin_ID(bot,contact,member):
+        bot.Restart()
+    if '更新数据' in content and admin_ID(bot,contact,member):
+        if bot.Update('buddy'):
+            Updata = True
+        elif bot.Update('group'):
+            Updata = True
+        elif member != None and bot.Update('group',contact):
+            Updata = True
+        if Updata:
+            bot.SendTo(contact, '数据更新完成')
+        else:
+            bot.SendTo(contact, '数据更新')
     if admin_ID(bot,contact,member) or user_ID(bot,member):
         if 'bot管理员' == content:
             admin = bot.List('buddy', 'Admin')[0]
@@ -52,27 +69,21 @@ def onQQMessage(bot, contact, member, content):
         if '闭嘴bot' == content or 'bot闭嘴' == content:
             lst = os.listdir('.qqbot-tmp\plugins')
             for f in lst:
-                if '.py' in f:
+                if '.py' in f and not ('plugMod' in content or 'Admin' in content or 'INFO' in content):
                     f = f.replace('.py', '')
                     bot.Unplug(f)
         if '说话bot' == content or 'bot说话' == content:
-            pluglist = [
-                "Admin",
-                "plugMod",
-                "questions",
-                "repeat",
-                "tuling",
-                "luck",
-                "INFO"
-            ]
-            for plug in pluglist:
-                bot.Plug(plug)
+            lst = os.listdir('.qqbot-tmp\plugins')
+            for file in lst:
+                if '.py' in file:
+                    file = file.replace('.py', '\n')
+                    bot.Plug(file)
         if 'bot用户' == content:
             user_list = bot.List('buddy', 'user')
             for user in user_list:
                 bot.SendTo(contact,'用户：'+user.nick+'\nID:'+user.uin)
         elif 'bot用户' in content:
-            strnum = content.split('bot用户')
+            strnum = content.split('bot用户')[1]
             num = int(strnum)
             user = bot.List('buddy', 'user')[num]
             bot.SendTo(contact, '用户'+strnum+'：'+user.nick+'\nID:'+user.uin)
