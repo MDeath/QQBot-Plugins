@@ -69,7 +69,7 @@ def onQQMessage(bot, contact, member, content):
         if '闭嘴bot' == content or 'bot闭嘴' == content:
             lst = os.listdir('.qqbot-tmp\plugins')
             for f in lst:
-                if '.py' in f and not ('plugMod' in content or 'Admin' in content or 'INFO' in content):
+                if'.py'in f and not('plugMod'in f or'Admin'in f or'INFO'in f):
                     f = f.replace('.py', '')
                     bot.Unplug(f)
         if '说话bot' == content or 'bot说话' == content:
