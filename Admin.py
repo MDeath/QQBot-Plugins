@@ -20,10 +20,11 @@ def admin_ID(bot, contact, member):
         return admin.uin == contact.uin
 
 def user_ID(bot,member):
-    user_list = bot.List('buddy', 'user')
-    for user in user_list:
-        if user.uin == member.uin:
-            return True
+    if member != None:
+        user_list = bot.List('buddy', 'user')
+        for user in user_list:
+            if user.uin == member.uin:
+                return True
 
 def onQQMessage(bot, contact, member, content):
     if '菜单' == content:
