@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import Admin
 import os
 import time
 import random
@@ -15,53 +14,49 @@ def onUnplug(bot):
     for g in group:
         bot.SendTo(g, '已卸载 luck')
 
+def log_write(contact, member, mod, log):
+    try:
+        os.mkdir('.qqbot-tmp/'+contact.name+'/'+mod+' log')
+    except:
+        pass
+    log_w = open('.qqbot-tmp/'+contact.name+'/'+mod+' log/'+member.nick+'.txt', 'w')
+    log_w.write(str(log))
+    log_w.close()
+
 def log_read(contact, member, mod):
+    today = time.strftime('%Y-%m-%d', time.localtime())
     try:
         log = open('.qqbot-tmp/'+contact.name+'/'+mod+' log/'+member.nick+'.txt', 'r')
         log_r = log.read()
         log.close()
         log = eval(log_r)
-        last = log['last']
         log_today = log['today']['Y:M:D']
         number = log['today']['number']
     except:
         log = {}
         log['name'] = member.nick
         log['last'] = 10
-        log['today'] = {}
+        log['today'] = {'Y:M:D':today, 'number':20}
         log['log'] = []
         for number in range(0,10):
             log['log'].append({'time': '', 'prop': ''})
-        last = 10
-        log_today = ''
-        number = 50
-    return log, last, log_today, number
-
-def log_write(contact, member, mod, log, last, number, info):
-    try:
-        os.mkdir('.qqbot-tmp/'+contact.name+'/'+mod+' log')
-    except:
-        pass
-    today = time.strftime('%Y-%m-%d', time.localtime())
-    log_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    log_w = open('.qqbot-tmp/'+contact.name+'/'+mod+' log/'+member.nick+'.txt', 'w')
-    log['name'] = member.nick
-    log['last'] = last
-    log['today']['Y:M:D'] = today
-    log['today']['number'] = number
-    log['log'].append({'time': log_time, 'prop': info})
-    del log['log'][0]
-    log_w.write(str(log))
-    log_w.close()
+        log_write(contact, member, mod, log)
+        log_today = today
+        number = 20
+    if today != log_today:
+        number += 20
+        log['today']['Y:M:D'], log['today']['number'] = today, number
+        log_write(contact, member, mod, log)
+    return log
 
 def Marking(contact,member,mod):
     today = time.strftime('%Y-%m-%d', time.localtime())
-    log, last, log_today, number = log_read(contact, member, mod)
-    if today == log_today:
+    log_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    info = 'None'
+    log = log_read(contact, member, mod)
+    number, last = log['today']['number'], log['last']
+    if number > 0:
         number -= 1
-    else:
-        number = 49
-    if number >= 0:
         if last > 1:
             last -= 1
             randint = random.randint(1, 10000)
@@ -332,21 +327,25 @@ def Marking(contact,member,mod):
             ]
             randint = random.randint(0, len(Goods_list) - 1)
             info = Goods_list[randint]
-        log_write(contact, member, mod, log, last, number, info)
+        log['last'] = last
+        log['today']['Y:M:D'] = today
+        log['today']['number'] = number
+        log['log'].append({'time': log_time, 'prop': info})
+        del log['log'][0]
+        log_write(contact, member, mod, log)
         number = True
     elif number == 0:
-        info = 'None'
         number = False
     return info,number
 
 def Weapon(contact,member,mod):
     today = time.strftime('%Y-%m-%d', time.localtime())
-    log, last, log_today, number = log_read(contact, member, mod)
-    if today == log_today:
+    log_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    info = 'None'
+    log = log_read(contact, member, mod)
+    number, last = log['today']['number'], log['last']
+    if number > 0:
         number -= 1
-    else:
-        number = 49
-    if number >= 0:
         if last > 1:
             last -= 1
             randint = random.randint(1, 100000)
@@ -544,30 +543,34 @@ def Weapon(contact,member,mod):
             ]
             randint = random.randint(0, len(Goods_list) - 1)
             info = '吼姆宝藏 ' + Goods_list[randint]
-        log_write(contact, member, mod, log, last, number, info)
+        log['last'] = last
+        log['today']['Y:M:D'] = today
+        log['today']['number'] = number
+        log['log'].append({'time': log_time, 'prop': info})
+        del log['log'][0]
+        log_write(contact, member, mod, log)
         number = True
     elif number == 0:
-        info = 'None'
         number = False
     return info,number
 
 def Upweapon(contact,member,mod):
     today = time.strftime('%Y-%m-%d', time.localtime())
-    log, last, log_today, number = log_read(contact, member, mod)
-    if today == log_today:
-        number -= 1
-    else:
-        number = 49
+    log_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    info = 'None'
+    log = log_read(contact, member, mod)
+    number, last = log['today']['number'], log['last']
     try:
         up = open('.qqbot-tmp/' + mod + '.txt', 'r')
         set_up = up.read()
         up.close()
         set_up = eval(set_up)
     except:
-        number = -1
+        number = False
         open('.qqbot-tmp/' + mod + '.txt', 'a')
         info = '未设置UP'
-    if number >= 0:
+    if number > 0:
+        number -= 1
         if last > 1:
             last -= 1
             randint = random.randint(1, 100000)
@@ -684,10 +687,14 @@ def Upweapon(contact,member,mod):
             ]
             randint = random.randint(0, len(Goods_list) - 1)
             info = Goods_list[randint]
-        log_write(contact, member, mod, log, last, number, info)
+        log['last'] = last
+        log['today']['Y:M:D'] = today
+        log['today']['number'] = number
+        log['log'].append({'time': log_time, 'prop': info})
+        del log['log'][0]
+        log_write(contact, member, mod, log)
         number = True
     elif member == 0:
-        info = '今天次数已用尽'
         number = False
     return info,number
 
@@ -705,7 +712,7 @@ def onQQMessage(bot, contact, member, content):
         查看 + 精准补给 A 或 B
         精准补给 A 或 B + 记录'''
         bot.SendTo(contact, info)
-    if not bot.isMe(contact, member) and '标配补给' in content and member != None:
+    if not bot.isMe(contact, member) and '标配补给' in content and member!=None:
         mod = 'Marking'
         if '10连' in content or '十连' in content:
             num, number = 10, True
@@ -716,23 +723,24 @@ def onQQMessage(bot, contact, member, content):
                 message += '\n'+info
             else:
                 if not number:
-                    message += '\n今天次数已用尽'
+                    message += '\n' + member.name + '今天次数已用尽'
             bot.SendTo(contact,message)
-        if '标配补给' == content:
+        elif '标配补给' == content:
             info, number = Marking(contact, member, mod)
             if number:
                 bot.SendTo(contact, info)
             else:
                 bot.SendTo(contact, member.name+'今天次数已用尽')
-        if '记录' in content or '查看' in content:
-            log, last, log_today, number = log_read(contact, member, mod)
-            log_list = log['log']
-            log = '今日剩余:'+str(number)+'\n距保底:'+str(last)+'\n'+log_today+'十连:'
+        elif '记录' in content or '查看' in content:
+            log = log_read(contact, member, mod)
+            last, log_list = log['last'], log['log']
+            log_today, number = log['today']['Y:M:D'], log['today']['number']
+            log = member.nick+' 今日剩余:'+str(number)+'\n距保底:'+str(last)+'\n'+log_today+'十连:'
             for num in log_list:
                 log += '\n'+num['time']+' '+num['prop']
             bot.SendTo(contact, log)
 
-    if not bot.isMe(contact, member) and '装备补给' in content and member != None:
+    if not bot.isMe(contact, member) and '装备补给' in content and member!=None:
         mod = 'Weapon'
         if '10连' in content or '十连' in content:
             num, number = 10, True
@@ -743,23 +751,24 @@ def onQQMessage(bot, contact, member, content):
                 message += '\n'+info
             else:
                 if not number:
-                    message += '\n今天次数已用尽'
+                    message += '\n' + member.name + '今天次数已用尽'
             bot.SendTo(contact,message)
-        if '装备补给' == content:
+        elif '装备补给' == content:
             info, number = Weapon(contact,member,mod)
             if number:
                 bot.SendTo(contact, info)
             else:
                 bot.SendTo(contact, member.name+'今天次数已用尽')
-        if '记录' in content or '查看' in content:
-            log, last, log_today, number = log_read(contact, member, mod)
-            log_list = log['log']
-            log = '今日剩余:'+str(number)+'\n距保底:'+str(last)+'\n'+log_today+'十连:'
+        elif '记录' in content or '查看' in content:
+            log = log_read(contact, member, mod)
+            last, log_list = log['last'], log['log']
+            log_today, number = log['today']['Y:M:D'], log['today']['number']
+            log = member.nick+' 今日剩余:'+str(number)+'\n距保底:'+str(last)+'\n'+log_today+'十连:'
             for num in log_list:
                 log += '\n'+num['time']+' '+num['prop']
             bot.SendTo(contact, log)
 
-    if not bot.isMe(contact, member) and '精准补给' in content and member != None:
+    if not bot.isMe(contact, member) and '精准补给' in content and member!=None:
         if 'A' in content or 'a' in content:
             mod = 'Upweapon A'
         elif 'B' in content or 'b' in content:
@@ -776,15 +785,19 @@ def onQQMessage(bot, contact, member, content):
                 message += '\n'+ info
             else:
                 if not number:
-                    message += '\n' + info
+                    message += '\n' + member.name + '今天次数以用尽'
             bot.SendTo(contact,message)
         elif '记录' in content or '查看' in content:
-            log, last, log_today, number = log_read(contact, member, mod)
-            log_list = log['log']
-            log = '今日剩余:'+str(number)+'\n距保底:'+str(last)+'\n'+log_today+'十连:'
+            log = log_read(contact, member, mod)
+            last, log_list = log['last'], log['log']
+            log_today, number = log['today']['Y:M:D'], log['today']['number']
+            log = member.nick+' 今日剩余:'+str(number)+'\n距保底:'+str(last)+'\n'+log_today+'十连:'
             for num in log_list:
                 log += '\n'+num['time']+' '+num['prop']
             bot.SendTo(contact, log)
         elif '精准补给' in content:
             info, number = Upweapon(contact,member,mod)
-            bot.SendTo(contact, info)
+            if number:
+                bot.SendTo(contact, info)
+            else:
+                bot .SendTo(contact, member.name + '今日次数以用尽')
