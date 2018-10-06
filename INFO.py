@@ -25,27 +25,24 @@ def record(contact, member, content):
     info = log_time + ' ' + member.name + '：' + content + '\n'
     try:
         os.mkdir('.qqbot-tmp/' + contact.name + '/log/')
-        file_w = open('.qqbot-tmp/' + contact.name + '/log/' + today + '.txt', 'a', encoding='utf-8')
     except:
-        file_w = open('.qqbot-tmp/' + contact.name + '/log/' + today + '.txt', 'a', encoding='utf-8')
+        pass
+    file_w = open('.qqbot-tmp/' + contact.name + '/log/' + today + '.txt', 'a', encoding='utf-8')
     file_w.write(info)
     file_w.close
 
 def onQQMessage(bot, contact, member, content):
     record(contact, member, content)
-    if not bot.isMe(contact, member) or str(member) != 'None':
+    if member != None:
         try:
             info = info_r(contact)
             info_w(contact, member, content, info)
         except:
             try:
                 os.mkdir('.qqbot-tmp/'+contact.name)
-                info = {
-                    'user': [0,1,2,3,member.uin],
-                    'text': [0,1,2,3,content]}
-                info_w(contact, member, content, info)
             except:
-                info = {
-                    'user': [0, 1, 2, 3, member.uin],
-                    'text': [0, 1, 2, 3, content]}
-                info_w(contact, member, content, info)
+                pass
+            info = {
+                'user': [0, 1, 2, 3, member.uin],
+                'text': [0, 1, 2, 3, content]}
+            info_w(contact, member, content, info)
