@@ -3,6 +3,7 @@
 import Admin
 import os
 import time
+import traceback
 import random
 
 def onPlug(bot):
@@ -13,7 +14,7 @@ def onPlug(bot):
 def onUnplug(bot):
     group = bot.List('group')
     for g in group:
-        bot.SendTo(g, '已卸载 luck')
+        pass# bot.SendTo(g, '已卸载 luck')
 
 def log_write(contact, member, mod, log):
     try:
@@ -38,9 +39,7 @@ def log_read(bot, contact, member, mod):
         log['name'] = member.nick
         log['last'] = 10
         log['today'] = {'Y:M:D':today, 'number':20}
-        log['log'] = []
-        for number in range(0,10):
-            log['log'].append({'time': '', 'prop': ''})
+        log['log'] = [{'time': '', 'prop': ''}] * 10
         log_write(contact, member, mod, log)
         log_today = today
         number = 20
@@ -48,27 +47,44 @@ def log_read(bot, contact, member, mod):
         number += 20
         log['today']['Y:M:D'], log['today']['number'] = today, number
         log_write(contact, member, mod, log)
-    if Admin.admin_ID(bot, contact, member)or Admin.user_ID(bot,member):
+    if Admin.admin_ID(bot, contact, member, 1):
         log['today']['number'] = 10
     return log
 
-def Luck(bot, contact, member ,mod):
-    today = time.strftime('%Y-%m-%d', time.localtime())
-    log_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-    info = 'None'
-    log = log_read(bot, contact, member, mod)
-    number, last = log['today']['number'], log['last']
+def set_read(mod):
     try:
         file = open('.qqbot-tmp/UP/' + mod, 'r')
         up = file.read()
         file.close()
         set_up = eval(up)
     except:
+        print('traceback.print_exc():', traceback.print_exc())
         try:
             os.mkdir('.qqbot-tmp/UP/')
         except:
             pass
         open('.qqbot-tmp/UP/' + mod, 'a')
+        set_up = False
+    return set_up
+
+def luck(set_up, randint):
+    initital, full = 0, 0
+    for num in set_up['goods_list']:
+        full += num['chance']
+        if initital < randint <= full:
+            Goods_list = num['list']
+            info = Goods_list[random.randint(0, len(Goods_list) - 1)]
+        initital += num['chance']
+    return info
+
+def supply(bot, contact, member ,mod):
+    today = time.strftime('%Y-%m-%d', time.localtime())
+    log_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    info = 'None'
+    log = log_read(bot, contact, member, mod)
+    number, last = log['today']['number'], log['last']
+    set_up = set_read(mod)
+    if not set_up:
         info, number = '未设置UP', -1
     if number > 0:
         number -= 1
@@ -78,13 +94,7 @@ def Luck(bot, contact, member ,mod):
         else:
             randint = random.randint(1, set_up['last_full'])
             last = 10
-        initital, full = 0, 0
-        for num in set_up['goods_list']:
-            full += num['chance']
-            if initital < randint <= full:
-                Goods_list = num['list']
-                info = Goods_list[random.randint(0, len(Goods_list) - 1)]
-            initital += num['chance']
+        info = luck(set_up, randint)
         log['last'] = last
         log['today']['Y:M:D'] = today
         log['today']['number'] = number
@@ -116,7 +126,7 @@ def onQQMessage(bot, contact, member, content):
             num, number = 10, True
             message = '十连标配：'
             while num > 0 and number:
-                info,number = Luck(bot, contact, member, mod)
+                info,number = supply(bot, contact, member, mod)
                 num -= 1
                 message += '\n'+info
             else:
@@ -124,7 +134,7 @@ def onQQMessage(bot, contact, member, content):
                     message += '\n' + member.name + '今天次数已用尽'
             bot.SendTo(contact,message)
         elif '标配补给' == content:
-            info, number = Luck(bot, contact, member, mod)
+            info, number = supply(bot, contact, member, mod)
             if number:
                 bot.SendTo(contact, info)
             else:
@@ -144,7 +154,7 @@ def onQQMessage(bot, contact, member, content):
             num, number = 10, True
             message = '十连装备：'
             while num > 0 and number:
-                info,number = Luck(bot, contact, member, mod)
+                info,number = supply(bot, contact, member, mod)
                 num -= 1
                 message += '\n'+info
             else:
@@ -152,7 +162,7 @@ def onQQMessage(bot, contact, member, content):
                     message += '\n' + member.name + '今天次数已用尽'
             bot.SendTo(contact,message)
         elif '装备补给' == content:
-            info, number = Luck(bot, contact,member,mod)
+            info, number = supply(bot, contact,member,mod)
             if number:
                 bot.SendTo(contact, info)
             else:
@@ -178,7 +188,7 @@ def onQQMessage(bot, contact, member, content):
             num, number = 10, True
             message = '十连精准：'
             while num > 0 and number:
-                info,number = Luck(bot, contact, member, mod)
+                info,number = supply(bot, contact, member, mod)
                 num -= 1
                 message += '\n'+ info
             else:
@@ -194,7 +204,7 @@ def onQQMessage(bot, contact, member, content):
                 log += '\n'+num['time']+' '+num['prop']
             bot.SendTo(contact, log)
         elif '精准补给' in content:
-            info, number = Luck(bot, contact,member,mod)
+            info, number = supply(bot, contact,member,mod)
             if number:
                 bot.SendTo(contact, info)
             else:
@@ -206,7 +216,7 @@ def onQQMessage(bot, contact, member, content):
             num, number = 10, True
             message = '十连扩充：'
             while num > 0 and number:
-                info,number = Luck(bot, contact, member, mod)
+                info,number = supply(bot, contact, member, mod)
                 num -= 1
                 message += '\n'+ info
             else:
@@ -222,8 +232,15 @@ def onQQMessage(bot, contact, member, content):
                 log += '\n'+num['time']+' '+num['prop']
             bot.SendTo(contact, log)
         elif '扩充补给' in content:
-            info, number = Luck(bot, contact,member,mod)
+            info, number = supply(bot, contact,member,mod)
             if number:
                 bot.SendTo(contact, info)
             else:
                 bot .SendTo(contact, member.name + '今日次数以用尽')
+
+    if ('禁言套餐'in content or'禁言大转盘'in content or'口了'in content)and Admin.admin_ID(bot, contact, member, 1):
+        mod = 'shut up'
+        set_up = set_read(mod)
+        randint = random.randint(1, set_up['full'])
+        info = luck(set_up, randint)
+        bot.SendTo(contact, '禁言'+info)
