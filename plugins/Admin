@@ -6,26 +6,26 @@ import time
 def onPlug(bot):
     group = bot.List('group')
     for g in group:
-        bot.SendTo(g, '已加载 Admin')
+        pass# bot.SendTo(g, '已加载 Admin')
 
 def onUnplug(bot):
     group = bot.List('group')
     for g in group:
         bot.SendTo(g, '已卸载 Admin')
 
-def admin_ID(bot, contact, member):
-    admin = bot.List('buddy','Admin')[0]
-    if member != None:
-        return admin.uin == member.uin
-    elif member == None:
-        return admin.uin == contact.uin
-
-def user_ID(bot,member):
-    if member != None:
-        user_list = bot.List('buddy', 'user')
-        for user in user_list:
-            if user.uin == member.uin:
-                return True
+def admin_ID(bot, contact, member, code):
+    if code >= 1:
+        if member != None:
+            user_list = bot.List('buddy', 'user')
+            for user in user_list:
+                if user.uin == member.uin:
+                    return True
+    if code >= 0:
+        admin = bot.List('buddy','Admin')[0]
+        if member != None:
+            return admin.uin == member.uin
+        elif member == None:
+            return admin.uin == contact.uin
 
 def onQQMessage(bot, contact, member, content):
     if '菜单' == content:
@@ -51,9 +51,9 @@ def onQQMessage(bot, contact, member, content):
         elif member == None:
             buddy = bot.List('buddy', contact.name)[0]
             bot.SendTo(contact, 'UID:' + buddy.uin + '\n昵称：' + buddy.nick + '\n群名片：' + buddy.name)
-    if ('重启bot' == content or 'bot重启' == content) and admin_ID(bot,contact,member):
+    if ('重启bot' == content or 'bot重启' == content) and admin_ID(bot,contact,member, 0):
         bot.Restart()
-    if '更新数据' in content and admin_ID(bot,contact,member):
+    if '更新数据' in content and admin_ID(bot,contact,member, 0):
         if bot.Update('buddy'):
             Updata = True
         elif bot.Update('group'):
@@ -64,7 +64,7 @@ def onQQMessage(bot, contact, member, content):
             bot.SendTo(contact, '数据更新完成')
         else:
             bot.SendTo(contact, '数据更新')
-    if admin_ID(bot,contact,member) or user_ID(bot,member):
+    if admin_ID(bot,contact,member, 1):
         if 'bot管理员' == content:
             admin = bot.List('buddy', 'Admin')[0]
             bot.SendTo(contact, '管理员：'+admin.nick+' ID:'+admin.uin)
