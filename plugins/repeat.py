@@ -1,70 +1,64 @@
 # -*- coding: utf-8 -*-
 
-import INFO
 import random
 
 def onPlug(bot):
     group = bot.List('group')
     for g in group:
-        bot.SendTo(g, '已加载 repeat')
+        pass# bot.SendTo(g, '已加载 repeat')
 
 def onUnplug(bot):
     group = bot.List('group')
     for g in group:
         bot.SendTo(g, '已卸载 repeat')
 
+def info_r(contact):
+    file = open('.qqbot-tmp/'+contact.name+'/info.txt', 'r', encoding='utf-8')
+    text = file.read()
+    info = eval(text)
+    file.close
+    return info
+
+def info_w(contact, member, content, info):
+    info['user'].append(member)
+    del info['user'][0]
+    info['text'].append(content)
+    del info['text'][0]
+    file_w = open('.qqbot-tmp/'+contact.name+'/info.txt', 'w', encoding='utf-8')
+    file_w.write(str(info))
+    file_w.close
+
 def onQQMessage(bot, contact, member, content):
+    if bot.isMe(contact, member):user_uin = 0
+    else:user_uin = member.uin
+    if member != None:
+        try:
+            info = info_r(contact)
+            info_w(contact, user_uin, content, info)
+        except:
+            try:
+                os.mkdir('.qqbot-tmp/'+contact.name)
+            except:
+                pass
+            info = {
+                'user': [0, 1, 2, 3, 4],
+                'text': [0, 1, 2, 3, 4]}
+            info_w(contact, user_uin, content, info)
     if member != None and not bot.isMe(contact, member):
         if random.randint(0,500) < 1:
             bot.SendTo(contact, content)
-        elif random.randint(0,1) == 1:
-            info = INFO.info_r(contact)
-            user, user1, user2 = info['user'][0], info['user'][1], info['user'][2]
-            user3, user4 = info['user'][3], info['user'][4]
-            text, text1, text2 = info['text'][0] , info['text'][1], info['text'][2]
-            text3, text4 = info['text'][3], info['text'][4]
-            if user != user1 != user2 != user3 != user4 != member.uin and content == text4 != text != text1 != text2 != text3:
-                if random.randint(0,1) == 1:
-                    bot.SendTo(contact, content)
-            elif user != user1 != user2 != user3 != user4 != member.uin and content == text3 != text != text1 != text2 != text4:
-                if random.randint(0,1) == 1:
-                    bot.SendTo(contact, content)
-            elif user != user1 != user2 != user3 != user4 != member.uin and content == text2 != text != text1 != text3 != text4:
-                if random.randint(0,1) == 1:
-                    bot.SendTo(contact, content)
-            elif user != user1 != user2 != user3 != user4 != member.uin and content == text1 != text != text2 != text3 != text4:
-                if random.randint(0,1) == 1:
-                    bot.SendTo(contact, content)
-            elif user != user1 != user2 != user3 != user4 != member.uin and content == text != text1 != text2 != text3 != text4:
-                if random.randint(0,1) == 1:
-                    bot.SendTo(contact, content)
-            elif user != user1 != user2 != user3 != user4 != member.uin and text4 == text3 != text != text1 != text2 != content:
-                if random.randint(0,1) == 1:
-                    bot.SendTo(contact, text4)
-            elif user != user1 != user2 != user3 != user4 != member.uin and text4 == text2 != text != text1 != text3 != content:
-                if random.randint(0,1) == 1:
-                    bot.SendTo(contact, text4)
-            elif user != user1 != user2 != user3 != user4 != member.uin and text4 == text1 != text != text2 != text3 != content:
-                if random.randint(0,1) == 1:
-                    bot.SendTo(contact, text4)
-            elif user != user1 != user2 != user3 != user4 != member.uin and text4 == text != text1 != text2 != text3 != content:
-                if random.randint(0,1) == 1:
-                    bot.SendTo(contact, text4)
-            elif user != user1 != user2 != user3 != user4 != member.uin and text3 == text2 != text != text1 != text4 != content:
-                if random.randint(0,1) == 1:
-                    bot.SendTo(contact, text3)
-            elif user != user1 != user2 != user3 != user4 != member.uin and text3 == text1 != text != text2 != text4 != content:
-                if random.randint(0,1) == 1:
-                    bot.SendTo(contact, text3)
-            elif user != user1 != user2 != user3 != user4 != member.uin and text3 == text != text1 != text2 != text4 != content:
-                if random.randint(0,1) == 1:
-                    bot.SendTo(contact, text3)
-            elif user != user1 != user2 != user3 != user4 != member.uin and text2 == text1 != text != text3 != text4 != content:
-                if random.randint(0,1) == 1:
-                    bot.SendTo(contact, text2)
-            elif user != user1 != user2 != user3 != user4 != member.uin and text2 == text != text1 != text3 != text4 != content:
-                if random.randint(0,1) == 1:
-                    bot.SendTo(contact, text2)
-            elif user != user1 != user2 != user3 != user4 != member.uin and text1 == text != text2 != text3 != text4 != content:
-                if random.randint(0,1) == 1:
-                    bot.SendTo(contact, )
+        else:
+            info = info_r(contact)
+            user = info['user']
+            user.append(user_uin)
+            text = info['text']
+            text.append(content)
+            repeat = 0
+            if not 0 in user:
+                for _ in user:
+                    text_pop = text.pop()
+                    if text_pop in text:
+                        repeat_text = text_pop
+                        repeat += 1
+                if repeat == 1 < 1 and random.randint(0,1):
+                    bot.SendTo(contact, repeat_text)
