@@ -31,19 +31,6 @@ def info_w(contact, member, content, info):
 def onQQMessage(bot, contact, member, content):
     if bot.isMe(contact, member):user_uin = 0
     else:user_uin = member.uin
-    if member != None:
-        try:
-            info = info_r(contact)
-            info_w(contact, user_uin, content, info)
-        except:
-            try:
-                os.mkdir('.qqbot-tmp/'+contact.name)
-            except:
-                pass
-            info = {
-                'user': [0, 1, 2, 3, 4],
-                'text': [0, 1, 2, 3, 4]}
-            info_w(contact, user_uin, content, info)
     if member != None and not bot.isMe(contact, member):
         if random.randint(0,500) < 1:
             bot.SendTo(contact, content)
@@ -62,3 +49,16 @@ def onQQMessage(bot, contact, member, content):
                         repeat += 1
                 if repeat == 1 < 1 and random.randint(0,1):
                     bot.SendTo(contact, repeat_text)
+    if member != None:
+        try:
+            info = info_r(contact)
+            info_w(contact, user_uin, content, info)
+        except:
+            try:
+                os.mkdir('.qqbot-tmp/'+contact.name)
+            except:
+                pass
+            info = {
+                'user': [0, 1, 2, 3, 4],
+                'text': [0, 1, 2, 3, 4]}
+            info_w(contact, user_uin, content, info)
