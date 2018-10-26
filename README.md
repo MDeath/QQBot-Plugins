@@ -13,6 +13,10 @@ INFO - 信息记录
 
 repeat - 复读机
 
+reply - 自动回复
+
 luck - 崩崩崩抽奖模拟
 
 tuling - 图灵机器人接口案例
+
+/up 该目录下为蛋池格式
